@@ -54,18 +54,36 @@ fn_get_value_from_file "${BATCH_ID_DATA_DIR}"/upc-product/"${BATCH_ID_FILE_NAME}
 BATCH_ID="${VAL}"
 
 
-fn_run_teradata_to_raw_incremental \
+if fn_check_if_file_exists "${MIN_RECORD_DIR}/upc-product_first.txt"
+then
+  fn_run_teradata_to_raw_incremental \
     ${TDCH_JAR} \
     ${NUMBER_OF_MAPPERS} \
     ${TERADATA_ENV} \
     ${DATABASE_NAME} \
     ${USERNAME} \
     ${PASSWORD_FILE} \
-    ${FS_PATH}/increment_upc_product/batch_id=${BATCH_ID} \
+    ${INPUT_DIR}/batch_id=${BATCH_ID} \
     upc_product \
-    "last_update_ts >= ${MIN_VAL} and last_update_ts < ${MAX_VAL}" \
+    "last_update_ts >= ${MIN_VAL} and last_update_ts <= ${MAX_VAL}" \
     ${FIELDS_TERMINATOR}
 
+  fn_delete_local_file "${MIN_RECORD_DIR}/upc-product_first.txt"
+
+else
+  fn_run_teradata_to_raw_incremental \
+    ${TDCH_JAR} \
+    ${NUMBER_OF_MAPPERS} \
+    ${TERADATA_ENV} \
+    ${DATABASE_NAME} \
+    ${USERNAME} \
+    ${PASSWORD_FILE} \
+    ${INPUT_DIR}/batch_id=${BATCH_ID} \
+    upc_product \
+    "last_update_ts > ${MIN_VAL} and last_update_ts <= ${MAX_VAL}" \
+    ${FIELDS_TERMINATOR}
+
+fi
 
 
 

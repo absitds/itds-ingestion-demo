@@ -592,6 +592,50 @@ fn_run_oracle_to_raw_one_time(){
     }
 
 
+function fn_get_min_val_to_char(){
+
+      jdbc_url="${1}"
+
+      fn_assert_variable_is_set "jdbc_url" "${jdbc_url}"
+
+      database="${2}"
+
+      fn_assert_variable_is_set "database" "${database}"
+
+      username="${3}"
+
+      fn_assert_variable_is_set "username" "${username}"
+
+      psswd_file="${4}"
+
+      fn_assert_variable_is_set "psswd_file" "${psswd_file}"
+
+      tablename="${5}"
+
+      fn_assert_variable_is_set "tablename" "${tablename}"
+
+      increment_column_name="${6}"
+
+      fn_assert_variable_is_set "increment_column_name" "${increment_column_name}"
+
+      export MN_VAL=$(sqoop eval \
+                        --connect ${jdbc_url} \
+                        -username ${username} \
+                        -password `cat ${psswd_file}` \
+                        --query  "SELECT to_char(min(${increment_column_name})) from ${database}.${tablename}")
+
+      export  MIN_VAL=`echo $MN_VAL | cut -d '|' -f 4`
+
+      exit_code=`fn_get_exit_code $?`
+
+      success_message="Successfully fetched previous date from ${tablename}"
+
+      failure_message="Failed to fetch previous date from  ${tablename}"
+
+      fn_handle_exit_code "${exit_code}" "${success_message}" "${failure_message}" "${fail_on_error}"
+
+    }
+
 
     function fn_get_max_val(){
 
@@ -624,6 +668,52 @@ fn_run_oracle_to_raw_one_time(){
                         -username ${username} \
                         -password `cat ${psswd_file}` \
                         --query  "SELECT max(${increment_column_name}) from ${database}.${tablename}")
+
+      export  MAX_VAL=`echo $MN_VAL | cut -d '|' -f 4`
+
+
+      exit_code=`fn_get_exit_code $?`
+
+      success_message="Successfully fetched previous date from ${tablename}"
+
+      failure_message="Failed to fetch previous date from  ${tablename}"
+
+      fn_handle_exit_code "${exit_code}" "${success_message}" "${failure_message}" "${fail_on_error}"
+
+    }
+
+
+function fn_get_max_val_to_char(){
+
+      jdbc_url="${1}"
+
+      fn_assert_variable_is_set "jdbc_url" "${jdbc_url}"
+
+      database="${2}"
+
+      fn_assert_variable_is_set "database" "${database}"
+
+      username="${3}"
+
+      fn_assert_variable_is_set "username" "${username}"
+
+      psswd_file="${4}"
+
+      fn_assert_variable_is_set "psswd_file" "${psswd_file}"
+
+      tablename="${5}"
+
+      fn_assert_variable_is_set "tablename" "${tablename}"
+
+      increment_column_name="${6}"
+
+      fn_assert_variable_is_set "increment_column_name" "${increment_column_name}"
+
+      export MN_VAL=$(sqoop eval \
+                        --connect ${jdbc_url} \
+                        -username ${username} \
+                        -password `cat ${psswd_file}` \
+                        --query  "SELECT to_char(max(${increment_column_name})) from ${database}.${tablename}")
 
       export  MAX_VAL=`echo $MN_VAL | cut -d '|' -f 4`
 

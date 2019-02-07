@@ -72,8 +72,11 @@ fn_get_min_val \
 
 
 fn_write_val_to_file \
-"$MIN_VAL" \
-"${MIN_RECORD_DIR}/supply-item_min_record.value"
+  "$MIN_VAL" \
+  "${MIN_RECORD_DIR}/supply-item_min_record.value"
+
+touch "${MIN_RECORD_DIR}/supply-item_first.txt"
+
 fi
 
 fn_log_info "Fetching maximum value from teradata"
@@ -85,6 +88,7 @@ fn_get_max_val \
     ${PASSWORD_FILE} \
     SUPPLY_ITEM \
     creationtm
+
 
 fn_write_val_to_file \
 "$MAX_VAL" \

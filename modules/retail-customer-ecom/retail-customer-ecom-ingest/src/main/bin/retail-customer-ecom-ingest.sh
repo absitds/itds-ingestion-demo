@@ -54,18 +54,36 @@ fn_get_value_from_file "${BATCH_ID_DATA_DIR}"/retail-customer-ecom/"${BATCH_ID_F
 BATCH_ID="${VAL}"
 
 
-fn_run_teradata_to_raw_incremental \
+if fn_check_if_file_exists "${MIN_RECORD_DIR}/retail-customer-ecom_first.txt"
+then
+  fn_run_teradata_to_raw_incremental \
     ${TDCH_JAR} \
     ${NUMBER_OF_MAPPERS} \
     ${TERADATA_ENV} \
     ${DATABASE_NAME} \
     ${USERNAME} \
     ${PASSWORD_FILE} \
-    ${FS_PATH}/increment_retail_customer_ecom/batch_id=${BATCH_ID} \
+    ${INPUT_DIR}/batch_id=${BATCH_ID} \
     retail_customer_ecom \
-    "creationtm >= ${MIN_VAL} and creationtm < ${MAX_VAL}" \
+    "creationtm >= ${MIN_VAL} and creationtm <= ${MAX_VAL}" \
     ${FIELDS_TERMINATOR}
 
+  fn_delete_local_file "${MIN_RECORD_DIR}/retail-customer-ecom_first.txt"
+
+else
+  fn_run_teradata_to_raw_incremental \
+    ${TDCH_JAR} \
+    ${NUMBER_OF_MAPPERS} \
+    ${TERADATA_ENV} \
+    ${DATABASE_NAME} \
+    ${USERNAME} \
+    ${PASSWORD_FILE} \
+    ${INPUT_DIR}/batch_id=${BATCH_ID} \
+    retail_customer_ecom \
+    "creationtm > ${MIN_VAL} and creationtm <= ${MAX_VAL}" \
+    ${FIELDS_TERMINATOR}
+
+fi
 
 
 
